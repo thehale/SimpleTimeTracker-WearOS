@@ -6,35 +6,26 @@
 
 package dev.jhale.android.wear.simpletimetracker.presentation
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.*
 import dev.jhale.android.wear.simpletimetracker.R
+import dev.jhale.android.wear.simpletimetracker.data.getTimeTrackingActivities
 import dev.jhale.android.wear.simpletimetracker.presentation.theme.SimpleTimeTrackerForWearOSTheme
 
 
@@ -80,10 +71,7 @@ fun WearApp() {
 
 @Composable
 fun ActivityList(scrollState: ScalingLazyListState) {
-    /* If you have enough items in your list, use [ScalingLazyColumn] which is an optimized
-     * version of LazyColumn for wear devices with some added features. For more information,
-     * see d.android.com/wear/compose.
-     */
+    val activities = getTimeTrackingActivities()
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -93,75 +81,83 @@ fun ActivityList(scrollState: ScalingLazyListState) {
         verticalArrangement = Arrangement.Center,
         state = scrollState,
     ) {
-        item { Activity(activityName = "TODOs", tagName = "") }
-        item { Activity(activityName = "Travel", tagName = "") }
-        item { Activity(activityName = "Planning", tagName = "") }
-        item { Activity(activityName = "Learning", tagName = "Classes") }
-        item { Activity(activityName = "Learning", tagName = "Hobbies") }
-        item { Activity(activityName = "Learning", tagName = "Homework") }
-        item { Activity(activityName = "Learning", tagName = "Music") }
-        item { Activity(activityName = "Learning", tagName = "Thesis") }
-        item { Activity(activityName = "Professional", tagName = "Anva") }
-        item { Activity(activityName = "Professional", tagName = "Networking") }
-        item { Activity(activityName = "Professional", tagName = "Trainings") }
-        item { Activity(activityName = "Professional", tagName = "Volunteer") }
-        item { Activity(activityName = "Activities", tagName = "Personal") }
-        item { Activity(activityName = "Activities", tagName = "Family") }
-        item { Activity(activityName = "Activities", tagName = "Friends") }
-        item { Activity(activityName = "Basic Needs", tagName = "Exercise") }
-        item { Activity(activityName = "Basic Needs", tagName = "Hygiene") }
-        item { Activity(activityName = "Basic Needs", tagName = "Meals") }
-        item { Activity(activityName = "Basic Needs", tagName = "Sleep") }
-        item { Activity(activityName = "Church", tagName = "Service") }
-        item { Activity(activityName = "Church", tagName = "Study") }
-        item { Activity(activityName = "Church", tagName = "Worship") }
-        item { Activity(activityName = "Dates", tagName = "") }
-        item { Activity(activityName = "Other", tagName = "") }
+        for (activity in activities) {
+            if (activity.tags.isEmpty()) {
+                item {
+                    Activity(
+                        name = activity.name,
+                        tag = "",
+                        color = activity.color,
+                        icon = activity.iconId
+                    )
+                }
+            } else {
+                for (tag in activity.tags) {
+                    item {
+                        Activity(
+                            name = activity.name,
+                            tag = tag,
+                            color = activity.color,
+                            icon = activity.iconId
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun Activity(activityName: String, tagName: String) {
-    if (tagName.isNotEmpty()) {
-        ActivityWithTag(activityName = activityName, tagName = tagName)
+fun Activity(
+    name: String,
+    tag: String,
+    color: Color = Color(96, 125, 139, 255),
+    icon: Int = R.drawable.baseline_question_mark_24
+) {
+    if (tag.isNotEmpty()) {
+        ActivityWithTag(name = name, tag = tag, color = color, icon = icon)
     } else {
-        ActivityWithoutTag(activityName = activityName)
+        ActivityWithoutTag(name = name, color = color, icon = icon)
     }
 }
 
 @Composable
-fun ActivityWithTag(activityName: String, tagName: String) {
+fun ActivityWithTag(
+    name: String, tag: String,
+    color: Color = Color(96, 125, 139, 255),
+    icon: Int = R.drawable.baseline_question_mark_24
+) {
     val context = LocalContext.current
     Chip(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .padding(top = 10.dp),
         icon = {
-            ActivityIcon(activityName = activityName)
+            ActivityIcon(iconId = icon)
         },
         label = {
             Text(
-                text = tagName,
+                text = tag,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         secondaryLabel = {
             Text(
-                text = activityName,
+                text = name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         colors = ChipDefaults.chipColors(
-            backgroundColor = colorForActivity(activityName)
+            backgroundColor = color
         ),
         onClick = {
-            Intent().also {intent ->
+            Intent().also { intent ->
                 intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
                 intent.setPackage("com.razeeman.util.simpletimetracker")
-                intent.putExtra("extra_activity_name", activityName)
-                intent.putExtra("extra_record_tag", tagName)
+                intent.putExtra("extra_activity_name", name)
+                intent.putExtra("extra_record_tag", tag)
                 Log.i(LOG_TAG, "Broadcasting Intent: $intent")
                 context.sendBroadcast(intent)
             }
@@ -171,30 +167,34 @@ fun ActivityWithTag(activityName: String, tagName: String) {
 
 
 @Composable
-fun ActivityWithoutTag(activityName: String) {
+fun ActivityWithoutTag(
+    name: String,
+    color: Color = Color(96, 125, 139, 255),
+    icon: Int = R.drawable.baseline_question_mark_24
+) {
     val context = LocalContext.current
     Chip(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .padding(top = 10.dp),
         icon = {
-            ActivityIcon(activityName = activityName)
+            ActivityIcon(iconId = icon)
         },
         label = {
             Text(
-                text = activityName,
+                text = name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         colors = ChipDefaults.chipColors(
-            backgroundColor = colorForActivity(activityName)
+            backgroundColor = color
         ),
         onClick = {
-            Intent().also {intent ->
+            Intent().also { intent ->
                 intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
                 intent.setPackage("com.razeeman.util.simpletimetracker")
-                intent.putExtra("extra_activity_name", activityName)
+                intent.putExtra("extra_activity_name", name)
                 Log.i(LOG_TAG, "Broadcasting Intent: $intent")
 
                 context.sendBroadcast(intent)
@@ -205,44 +205,12 @@ fun ActivityWithoutTag(activityName: String) {
 }
 
 @Composable
-fun ActivityIcon(activityName: String) {
+fun ActivityIcon(iconId: Int) {
     Icon(
-        painter = painterResource(id = iconForActivity(activityName)),
-        contentDescription = "airplane",
+        painter = painterResource(id = iconId),
+        contentDescription = "activity icon",
         modifier = Modifier
             .size(ChipDefaults.IconSize)
             .wrapContentSize(align = Alignment.Center),
     )
-}
-
-fun iconForActivity(activityName: String): Int {
-    val icons = mapOf<String, Int>(
-        "Activities" to R.drawable.baseline_people_24,
-        "Basic Needs" to R.drawable.baseline_bed_24,
-        "Church" to R.drawable.baseline_church_24,
-        "Dates" to R.drawable.baseline_heart_broken_24,
-        "Other" to R.drawable.baseline_horizontal_rule_24,
-        "Learning" to R.drawable.baseline_computer_24,
-        "Planning" to R.drawable.baseline_timer_24,
-        "Professional" to R.drawable.baseline_home_work_24,
-        "TODOs" to R.drawable.baseline_check_box_24,
-        "Travel" to R.drawable.baseline_directions_car_24,
-    )
-    return icons.getOrDefault(activityName, R.drawable.baseline_question_mark_24)
-}
-
-fun colorForActivity(activityName: String): Color {
-    val icons = mapOf<String, Color>(
-        "Activities" to Color(3, 169, 244, 255),
-        "Basic Needs" to Color(205, 220, 57, 255),
-        "Church" to Color(76, 175, 80, 255),
-        "Dates" to Color(156, 39, 176, 255),
-        "Other" to Color(96, 125, 139, 255),
-        "Learning" to Color(255, 193, 7, 255),
-        "Planning" to Color(255, 87, 34, 255),
-        "Professional" to Color(233, 30, 99, 255),
-        "TODOs" to Color(245, 54, 57, 255),
-        "Travel" to Color(120, 82, 72, 255),
-    )
-    return icons.getOrDefault(activityName, Color(96, 125, 139, 255))
 }
