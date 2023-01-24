@@ -6,13 +6,13 @@
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="FA77D0301461" />
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\jhale\.android\avd\Wear_OS_Large_Round_API_28.avd" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2023-01-24T06:50:20.742492100Z" />
+    <timeTargetWasSelectedWithDropDown value="2023-01-24T07:40:59.540011700Z" />
     <runningDeviceTargetsSelectedWithDialog>
       <Target>
         <type value="RUNNING_DEVICE_TARGET" />

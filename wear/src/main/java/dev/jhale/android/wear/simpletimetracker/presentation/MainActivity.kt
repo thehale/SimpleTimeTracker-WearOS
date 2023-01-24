@@ -7,14 +7,12 @@ package dev.jhale.android.wear.simpletimetracker.presentation
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.*
+import com.google.android.horologist.compose.focus.rememberActiveFocusRequester
+import com.google.android.horologist.compose.navscaffold.ExperimentalHorologistComposeLayoutApi
+import com.google.android.horologist.compose.rotaryinput.*
 import dev.jhale.android.wear.simpletimetracker.R
 import dev.jhale.android.wear.simpletimetracker.data.Messaging
 import dev.jhale.android.wear.simpletimetracker.data.getTimeTrackingActivities
@@ -36,14 +37,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val rotaryEventDispatcher = RotaryEventDispatcher()
-
-            CompositionLocalProvider(
-                LocalRotaryEventDispatcher provides rotaryEventDispatcher,
-            ) {
-                RotaryEventHandlerSetup(rotaryEventDispatcher)
-                WearApp()
-            }
+            WearApp()
         }
     }
 }
@@ -52,7 +46,6 @@ class MainActivity : ComponentActivity() {
 fun WearApp() {
     SimpleTimeTrackerForWearOSTheme {
         val scrollState = rememberScalingLazyListState()
-        RotaryEventState(scrollState)
         Scaffold(
             timeText = {
                 TimeText(modifier = Modifier.scrollAway(scrollState))
@@ -69,11 +62,15 @@ fun WearApp() {
     }
 }
 
+@OptIn(ExperimentalHorologistComposeLayoutApi::class)
 @Composable
-fun ActivityList(scrollState: ScalingLazyListState) {
+fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListState()) {
     val activities = getTimeTrackingActivities()
+    val focusRequester = rememberActiveFocusRequester()
+    val rotaryHapticFeedback = rememberRotaryHapticFeedback()
     ScalingLazyColumn(
         modifier = Modifier
+            .rotaryWithScroll(focusRequester, scrollState, rotaryHapticFeedback)
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
             .selectableGroup(),
