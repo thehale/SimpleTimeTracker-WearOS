@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package dev.jhale.android.wear.simpletimetracker.presentation
 
 // Used under the Apache-2.0 license from https://github.com/joreilly/PeopleInSpace/pull/84/files
