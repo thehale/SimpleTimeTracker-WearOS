@@ -11,6 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SimpleTimeTrackerForWearOS"
         tools:targetApi="31">
+        <service
+            android:name=".StartTimeTrackingActivityListener"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*"
+                    android:path="/start_time_tracking_activity" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

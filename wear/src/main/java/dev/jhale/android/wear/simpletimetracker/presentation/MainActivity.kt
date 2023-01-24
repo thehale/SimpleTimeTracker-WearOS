@@ -1,7 +1,6 @@
 package dev.jhale.android.wear.simpletimetracker.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -20,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.*
 import dev.jhale.android.wear.simpletimetracker.R
+import dev.jhale.android.wear.simpletimetracker.data.Messaging
 import dev.jhale.android.wear.simpletimetracker.data.getTimeTrackingActivities
 import dev.jhale.android.wear.simpletimetracker.presentation.theme.SimpleTimeTrackerForWearOSTheme
 
@@ -193,14 +193,5 @@ fun ActivityIcon(iconId: Int) {
 }
 
 fun startTimeTracking(context: Context, activity: String, tag: String) {
-    Intent().also { intent ->
-        intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
-        intent.setPackage("com.razeeman.util.simpletimetracker")
-        intent.putExtra("extra_activity_name", activity)
-        if (tag.isNotEmpty()) {
-            intent.putExtra("extra_record_tag", tag)
-        }
-        Log.i(LOG_TAG, "Broadcasting Intent: $intent")
-        context.sendBroadcast(intent)
-    }
+    Messaging().startTimeTracking(context, activity, tag)
 }
