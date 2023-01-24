@@ -37,13 +37,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WearApp()
+            WearApp(onComplete = {
+                this.finishAndRemoveTask()
+            })
         }
     }
 }
 
 @Composable
-fun WearApp() {
+fun WearApp(onComplete: () -> Unit) {
     SimpleTimeTrackerForWearOSTheme {
         val scrollState = rememberScalingLazyListState()
         Scaffold(
@@ -57,14 +59,17 @@ fun WearApp() {
                 PositionIndicator(scalingLazyListState = scrollState)
             }
         ) {
-            ActivityList(scrollState)
+            ActivityList(scrollState, onComplete)
         }
     }
 }
 
 @OptIn(ExperimentalHorologistComposeLayoutApi::class)
 @Composable
-fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListState()) {
+fun ActivityList(
+    scrollState: ScalingLazyListState = rememberScalingLazyListState(),
+    onComplete: () -> Unit
+) {
     val activities = getTimeTrackingActivities()
     val focusRequester = rememberActiveFocusRequester()
     val rotaryHapticFeedback = rememberRotaryHapticFeedback()
@@ -85,7 +90,8 @@ fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListStat
                         name = activity.name,
                         tag = "",
                         color = activity.color,
-                        icon = activity.iconId
+                        icon = activity.iconId,
+                        onComplete = onComplete,
                     )
                 }
             } else {
@@ -95,7 +101,8 @@ fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListStat
                             name = activity.name,
                             tag = tag,
                             color = activity.color,
-                            icon = activity.iconId
+                            icon = activity.iconId,
+                            onComplete = onComplete,
                         )
                     }
                 }
@@ -109,12 +116,13 @@ fun Activity(
     name: String,
     tag: String,
     color: Color = Color(96, 125, 139, 255),
-    icon: Int = R.drawable.baseline_question_mark_24
+    icon: Int = R.drawable.baseline_question_mark_24,
+    onComplete: () -> Unit
 ) {
     if (tag.isNotEmpty()) {
-        ActivityWithTag(name = name, tag = tag, color = color, icon = icon)
+        ActivityWithTag(name = name, tag = tag, color = color, icon = icon, onComplete = onComplete)
     } else {
-        ActivityWithoutTag(name = name, color = color, icon = icon)
+        ActivityWithoutTag(name = name, color = color, icon = icon, onComplete = onComplete)
     }
 }
 
@@ -123,7 +131,8 @@ fun ActivityWithTag(
     name: String,
     tag: String,
     color: Color = Color(96, 125, 139, 255),
-    icon: Int = R.drawable.baseline_question_mark_24
+    icon: Int = R.drawable.baseline_question_mark_24,
+    onComplete: () -> Unit,
 ) {
     val context = LocalContext.current
     Chip(
@@ -150,7 +159,7 @@ fun ActivityWithTag(
         colors = ChipDefaults.chipColors(
             backgroundColor = color
         ),
-        onClick = { startTimeTracking(context, name, tag) }
+        onClick = { startTimeTracking(context, name, tag, onComplete) }
     )
 }
 
@@ -159,7 +168,8 @@ fun ActivityWithTag(
 fun ActivityWithoutTag(
     name: String,
     color: Color = Color(96, 125, 139, 255),
-    icon: Int = R.drawable.baseline_question_mark_24
+    icon: Int = R.drawable.baseline_question_mark_24,
+    onComplete: () -> Unit,
 ) {
     val context = LocalContext.current
     Chip(
@@ -179,7 +189,7 @@ fun ActivityWithoutTag(
         colors = ChipDefaults.chipColors(
             backgroundColor = color
         ),
-        onClick = { startTimeTracking(context, name, "") }
+        onClick = { startTimeTracking(context, name, "", onComplete) }
     )
 }
 
@@ -194,6 +204,6 @@ fun ActivityIcon(iconId: Int) {
     )
 }
 
-fun startTimeTracking(context: Context, activity: String, tag: String) {
-    Messaging().startTimeTracking(context, activity, tag)
+fun startTimeTracking(context: Context, activity: String, tag: String, onComplete: () -> Unit) {
+    Messaging().startTimeTracking(context, activity, tag, onComplete = onComplete)
 }

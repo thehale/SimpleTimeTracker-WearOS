@@ -17,12 +17,12 @@ import dev.jhale.android.wear.simpletimetracker.presentation.LOG_TAG
 const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity"
 
 class Messaging {
-    fun startTimeTracking(context: Context, activity: String, tag: String) {
+    fun startTimeTracking(context: Context, activity: String, tag: String, onComplete: () -> Unit) {
         Thread(Runnable {
-            startTimeTrackingTask(context, activity, tag)
+            startTimeTrackingTask(context, activity, tag, onComplete)
         }).start()
     }
-    private fun startTimeTrackingTask(context: Context, activity: String, tag: String) {
+    private fun startTimeTrackingTask(context: Context, activity: String, tag: String, onComplete: () -> Unit) {
         // Find all nodes which support the time tracking message
         val capabilityInfo: CapabilityInfo = Tasks.await(
             Wearable.getCapabilityClient(context)
@@ -49,6 +49,7 @@ class Messaging {
                         LOG_TAG,
                         "Sent $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME message: $message"
                     )
+                    onComplete()
                 }
                 addOnFailureListener {
                     Log.e(
