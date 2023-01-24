@@ -2,7 +2,16 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
 
+<div align="center">
+
 # Simple Time Tracker for Wear OS
+
+|                                                                         |                                                                          |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ![Application screenshot](docs/simpletimetracker-wearos-list-start.png) | ![Application screenshot](docs/simpletimetracker-wearos-list-middle.png) |
+
+</div>
+
 
 A WearOS companion app to trigger time tracking events from your wrist. Designed for use with 
 [SimpleTimeTracker](https://github.com/Razeeman/Android-SimpleTimeTracker) version 1.20 or later.
