@@ -56,7 +56,7 @@ fun iconForActivity(activityName: String): Int {
 }
 
 fun colorForActivity(activityName: String): Color {
-    val icons = mapOf<String, Color>(
+    val colors = mapOf<String, Color>(
         "Activities" to Color(3, 169, 244, 255),
         "Basic Needs" to Color(205, 220, 57, 255),
         "Church" to Color(76, 175, 80, 255),
@@ -68,5 +68,5 @@ fun colorForActivity(activityName: String): Color {
         "TODOs" to Color(245, 54, 57, 255),
         "Travel" to Color(120, 82, 72, 255),
     )
-    return icons.getOrDefault(activityName, Color(96, 125, 139, 255))
+    return colors.getOrDefault(activityName, Color(96, 125, 139, 255))
 }
