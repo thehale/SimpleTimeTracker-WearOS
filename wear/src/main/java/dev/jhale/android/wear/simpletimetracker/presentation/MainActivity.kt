@@ -1,11 +1,6 @@
-/* While this template provides a good starting point for using Wear Compose, you can always
- * take a look at https://github.com/android/wear-os-samples/tree/main/ComposeStarter and
- * https://github.com/android/wear-os-samples/tree/main/ComposeAdvanced to find the most up to date
- * changes to the libraries and their usages.
- */
-
 package dev.jhale.android.wear.simpletimetracker.presentation
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -123,7 +118,8 @@ fun Activity(
 
 @Composable
 fun ActivityWithTag(
-    name: String, tag: String,
+    name: String,
+    tag: String,
     color: Color = Color(96, 125, 139, 255),
     icon: Int = R.drawable.baseline_question_mark_24
 ) {
@@ -152,16 +148,7 @@ fun ActivityWithTag(
         colors = ChipDefaults.chipColors(
             backgroundColor = color
         ),
-        onClick = {
-            Intent().also { intent ->
-                intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
-                intent.setPackage("com.razeeman.util.simpletimetracker")
-                intent.putExtra("extra_activity_name", name)
-                intent.putExtra("extra_record_tag", tag)
-                Log.i(LOG_TAG, "Broadcasting Intent: $intent")
-                context.sendBroadcast(intent)
-            }
-        }
+        onClick = { startTimeTracking(context, name, tag) }
     )
 }
 
@@ -190,17 +177,7 @@ fun ActivityWithoutTag(
         colors = ChipDefaults.chipColors(
             backgroundColor = color
         ),
-        onClick = {
-            Intent().also { intent ->
-                intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
-                intent.setPackage("com.razeeman.util.simpletimetracker")
-                intent.putExtra("extra_activity_name", name)
-                Log.i(LOG_TAG, "Broadcasting Intent: $intent")
-
-                context.sendBroadcast(intent)
-            }
-
-        }
+        onClick = { startTimeTracking(context, name, "") }
     )
 }
 
@@ -213,4 +190,17 @@ fun ActivityIcon(iconId: Int) {
             .size(ChipDefaults.IconSize)
             .wrapContentSize(align = Alignment.Center),
     )
+}
+
+fun startTimeTracking(context: Context, activity: String, tag: String) {
+    Intent().also { intent ->
+        intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
+        intent.setPackage("com.razeeman.util.simpletimetracker")
+        intent.putExtra("extra_activity_name", activity)
+        if (tag.isNotEmpty()) {
+            intent.putExtra("extra_record_tag", tag)
+        }
+        Log.i(LOG_TAG, "Broadcasting Intent: $intent")
+        context.sendBroadcast(intent)
+    }
 }
