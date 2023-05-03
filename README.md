@@ -6,6 +6,11 @@
 
 # Simple Time Tracker for Wear OS
 
+<!-- BADGES -->
+[![](https://badgen.net/github/license/thehale/SimpleTimeTracker-WearOS)](https://github.com/thehale/SimpleTimeTracker-WearOS/blob/master/LICENSE)
+[![](https://badgen.net/badge/icon/Sponsor/pink?icon=github&label)](https://github.com/sponsors/thehale)
+[![](https://badgen.net/badge/icon/Follow%20@jhaledev/1DA1F2?icon=twitter&label)](https://twitter.com/intent/user?screen_name=jhaledev)
+
 |                                                                         |                                                                          |
 | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | ![Application screenshot](docs/simpletimetracker-wearos-list-start.png) | ![Application screenshot](docs/simpletimetracker-wearos-list-middle.png) |
