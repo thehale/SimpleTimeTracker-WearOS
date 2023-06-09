@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val message = intent?.extras?.getString("message") ?: "|"
             textView.text = message
-
+            Log.i(LOG_TAG, "Message Recieved: $message")
             val messageParts = message.split("|")
             val activity = messageParts[0]
             val tag = messageParts[1]

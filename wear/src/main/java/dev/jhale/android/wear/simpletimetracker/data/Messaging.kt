@@ -15,6 +15,7 @@ import com.google.android.gms.wearable.Wearable
 import dev.jhale.android.wear.simpletimetracker.presentation.LOG_TAG
 
 const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity"
+const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_PATH = "/start_time_tracking_activity"
 
 class Messaging {
     fun startTimeTracking(context: Context, activity: String, tag: String) {
@@ -32,16 +33,18 @@ class Messaging {
                 )
         )
 
-        // Choose the best node (the closest one connected to the watch
+        // Choose the best node (the closest one connected to the watch)
         val nodes = capabilityInfo.nodes
+        Log.i(LOG_TAG, "nodes found: $nodes")
         val bestNode = nodes.firstOrNull { it.isNearby }?.id ?: nodes.firstOrNull()?.id
+        Log.i(LOG_TAG, "Best node found: $bestNode")
 
         // Send the message
         val message = "$activity|$tag"
         bestNode?.also { nodeId ->
             val sendTask: Task<*> = Wearable.getMessageClient(context).sendMessage(
                 nodeId,
-                "/$START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME",
+                START_TIME_TRACKING_ACTIVITY_CAPABILITY_PATH,
                 message.toByteArray()
             ).apply {
                 addOnSuccessListener {
