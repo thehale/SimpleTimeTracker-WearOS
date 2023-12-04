@@ -5,23 +5,42 @@
  */
 package dev.jhale.android.wear.simpletimetracker
 
+import android.app.Service
 import android.content.Intent
+import android.os.Binder
+import android.os.IBinder
 import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.CapabilityInfo
+import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
+import com.google.android.gms.wearable.Wearable
 import com.google.android.gms.wearable.WearableListenerService
 
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 const val START_TIME_TRACKING_ACTIVITY_PATH = "/start_time_tracking_activity"
 
-class StartTimeTrackingActivityListener : WearableListenerService() {
+class StartTimeTrackingActivityListener : Service(), MessageClient.OnMessageReceivedListener {
+    inner class FakeBinder : Binder()
+
+    private val binder = FakeBinder()
+
+    override fun onBind(intent: Intent): IBinder {
+        return binder
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        Wearable.getMessageClient(this).addListener(this);
+    }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
         if (messageEvent.path.equals(START_TIME_TRACKING_ACTIVITY_PATH)) {
             processStartTimeTrackingActivityMessage(messageEvent)
         } else {
             Log.d(LOG_TAG, "Propagating message with path ${messageEvent.path}")
-            super.onMessageReceived(messageEvent)
         }
     }
     private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
