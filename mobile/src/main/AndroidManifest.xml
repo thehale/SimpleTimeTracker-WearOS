@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+   package="dev.jhale.android.wear.simpletimetracker">
 
     <application
         android:allowBackup="true"
@@ -28,9 +29,27 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_CATEGORIES" />
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_RUNNING_RECORDS" />
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_PREFS" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+           android:name=".STTBroadcastReceiver"
+           android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_CATEGORIES" />
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_RUNNING_RECORDS" />
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_PREFS" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

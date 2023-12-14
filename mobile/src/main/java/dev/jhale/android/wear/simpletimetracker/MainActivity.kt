@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var textView: TextView
     lateinit var buttonDebug: Button
 
+    lateinit var categoriesView: TextView
+    lateinit var buttonDebugCategories: Button
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,30 +39,50 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
+        this.categoriesView = findViewById(R.id.text_view_categories)
+        this.buttonDebugCategories = findViewById(R.id.button_debug_read_categories)
+        this.buttonDebugCategories.setOnClickListener {
+            Intent("com.razeeman.util.simpletimetracker.ACTION_READ_CATEGORIES").also {
+                it.setPackage("com.razeeman.util.simpletimetracker.debug")
+                Log.i(LOG_TAG, "Broadcasting Intent: $it")
+                applicationContext.sendBroadcast(it)
+            }
+        }
+
         val newFilter = IntentFilter(Intent.ACTION_SEND)
 
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, newFilter)
     }
 
-    inner class Receiver : BroadcastReceiver() {
-
+    inner class Receiver() : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val message = intent?.extras?.getString("message") ?: "|"
-            textView.text = message
+            val action = intent?.action
 
-            val messageParts = message.split("|")
-            val activity = messageParts[0]
-            val tag = messageParts[1]
-            if (activity.isNotEmpty()) {
-                Intent().also { intent ->
-                    intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
-                    intent.setPackage("com.razeeman.util.simpletimetracker")
-                    intent.putExtra("extra_activity_name", activity)
-                    if (tag.isNotEmpty()) {
-                        intent.putExtra("extra_record_tag", tag)
+            when (action) {
+                "com.razeeman.util.simpletimetracker.ACTION_SEND_CATEGORIES" -> {
+                    intent.getStringExtra("categories").also {
+                        categoriesView.text = it
                     }
-                    Log.i(LOG_TAG, "Broadcasting Intent: $intent")
-                    context?.sendBroadcast(intent)
+                }
+                else -> {
+                    val message = intent?.extras?.getString("message") ?: "|"
+                    textView.text = message
+
+                    val messageParts = message.split("|")
+                    val activity = messageParts[0]
+                    val tag = messageParts[1]
+                    if (activity.isNotEmpty()) {
+                        Intent().also { intent ->
+                            intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
+                            intent.setPackage("com.razeeman.util.simpletimetracker.debug")
+                            intent.putExtra("extra_activity_name", activity)
+                            if (tag.isNotEmpty()) {
+                                intent.putExtra("extra_record_tag", tag)
+                            }
+                            Log.i(LOG_TAG, "Broadcasting Intent: $intent")
+                            context?.sendBroadcast(intent)
+                        }
+                    }
                 }
             }
         }
