@@ -7,11 +7,6 @@ android {
     namespace 'dev.jhale.android.wear.simpletimetracker'
     compileSdk 33
 
-
-    buildFeatures {
-        aidl true
-    }
-
     defaultConfig {
         applicationId "dev.jhale.android.wear.simpletimetracker"
         minSdk 25
