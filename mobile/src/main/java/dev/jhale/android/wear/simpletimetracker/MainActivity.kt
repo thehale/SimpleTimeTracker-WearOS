@@ -28,13 +28,13 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val messageReceiver = Receiver()
+        val messageSTTBroadcastTransmitter = STTBroadcastTransmitter()
 
         setContentView(R.layout.activity_main)
         this.textView = findViewById(R.id.text_view_message)
         this.buttonDebug = findViewById(R.id.button_debug)
         this.buttonDebug.setOnClickListener {
-            messageReceiver.onReceive(applicationContext, Intent().also{intent ->
+            messageSTTBroadcastTransmitter.onReceive(applicationContext, Intent().also{ intent ->
                 intent.putExtra("message", "Personal Learning|Hobbies")
             })
         }
@@ -54,11 +54,12 @@ class MainActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, newFilter)
     }
 
-    inner class Receiver() : BroadcastReceiver() {
+    inner class STTBroadcastTransmitter() : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action
 
             when (action) {
+                //This branch not used... see STTBroadcastReceiver
                 "com.razeeman.util.simpletimetracker.ACTION_SEND_CATEGORIES" -> {
                     intent.getStringExtra("categories").also {
                         categoriesView.text = it

@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class STTBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(p0: Context?, intent: Intent?) {
         val action = intent?.action

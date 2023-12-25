@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-package dev.jhale.android.wear.simpletimetracker.data
+package dev.jhale.android.wear.simpletimetracker
 
 import android.content.Context
 import android.util.Log
@@ -13,10 +13,11 @@ import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.Wearable
 import dev.jhale.android.wear.simpletimetracker.presentation.LOG_TAG
+import javax.inject.Inject
 
 const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity"
 
-class Messaging {
+class MessagingFacade @Inject constructor() {
     fun startTimeTracking(context: Context, activity: String, tag: String) {
         Thread(Runnable {
             startTimeTrackingTask(context, activity, tag)

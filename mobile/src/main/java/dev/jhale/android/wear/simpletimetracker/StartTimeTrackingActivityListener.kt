@@ -18,10 +18,12 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Wearable
 import com.google.android.gms.wearable.WearableListenerService
+import dagger.hilt.android.AndroidEntryPoint
 
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 const val START_TIME_TRACKING_ACTIVITY_PATH = "/start_time_tracking_activity"
 
+@AndroidEntryPoint
 class StartTimeTrackingActivityListener : Service(), MessageClient.OnMessageReceivedListener {
     inner class FakeBinder : Binder()
 
