@@ -24,6 +24,18 @@
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
+
+        <service
+           android:name=".MessagingFacade"
+           android:enabled="true"
+           android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*"
+                   android:path="/receive_categories" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"

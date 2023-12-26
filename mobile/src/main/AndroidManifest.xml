@@ -13,13 +13,15 @@
         android:theme="@style/Theme.SimpleTimeTrackerForWearOS"
         tools:targetApi="31">
         <service
-            android:name=".StartTimeTrackingActivityListener"
+            android:name=".MessagingFacade"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                <data android:scheme="wear" android:host="*"
-                    android:path="/start_time_tracking_activity" />
+                <data android:scheme="wear"/>
+                <data android:host="*"/>
+                <data android:path="/start_time_tracking_activity"/>
+                <data android:path="/request_categories"/>
             </intent-filter>
         </service>
 
@@ -28,10 +30,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_CATEGORIES" />
-                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_RUNNING_RECORDS" />
-                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_PREFS" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

@@ -5,8 +5,13 @@
  */
 package dev.jhale.android.wear.simpletimetracker
 
+import android.app.Service
 import android.content.Context
+import android.content.Intent
+import android.os.Binder
+import android.os.IBinder
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wearable.CapabilityClient
@@ -14,13 +19,18 @@ import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Wearable
-import dev.jhale.android.wear.simpletimetracker.presentation.LOG_TAG
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class MessagingFacade @Inject constructor()
-    : MessageClient.OnMessageReceivedListener {
+const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
+
+@AndroidEntryPoint
+class MessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
+    @Inject
+    lateinit var sttBroadcastTransmitter: STTBroadcastTransmitter
 
     // This the right way to implement collections of constants in Kotlin?
+        // hoist to common library module?
         companion object KnownMessages {
             const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity";
             const val REQUEST_CATEGORIES = "request_categories"
@@ -31,12 +41,25 @@ class MessagingFacade @Inject constructor()
         const val RECEIVE_PREFS = "receive_prefs"
         }
 
-    fun startTimeTracking(context: Context, activity: String, tag: String) {
+    inner class FakeBinder : Binder()
+
+    private val binder = FakeBinder()
+
+    override fun onBind(intent: Intent): IBinder {
+        return binder
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        Wearable.getMessageClient(this).addListener(this);
+    }
+
+    fun returnCategoriesList(context: Context, categories: List<String>) {
         Thread(Runnable {
             sendMessage(
                 context,
-                START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME,
-                "$activity|$tag"
+                RECEIVE_CATEGORIES,
+                categories.joinToString()
             )
         }).start()
     }
@@ -88,16 +111,36 @@ class MessagingFacade @Inject constructor()
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
-        when (messageEvent.path) {
-            RECEIVE_CATEGORIES -> {
+        val truncatedEventPath = messageEvent.path.drop(1)
+
+        when (truncatedEventPath) {
+            START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME -> {
+                processStartTimeTrackingActivityMessage(messageEvent)
+            }
+
+            REQUEST_CATEGORIES -> {
 
             }
 
-            RECEIVE_RUNNING_RECORDS -> {
+            REQUEST_RUNNING_RECORDS -> {
 
             }
 
-            else -> {}
+            //stop
+
+            else -> {
+                Log.d(LOG_TAG, "Propagating message with path ${messageEvent.path}")
+            }
+        }
+    }
+
+    private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
+        val message = String(messageEvent.data)
+        Log.d(LOG_TAG, "Message received: $message")
+        Intent().also {intent ->
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra("message", message)
+            sttBroadcastTransmitter.onReceive(applicationContext, intent)
         }
     }
 }
