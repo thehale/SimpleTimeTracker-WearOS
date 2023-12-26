@@ -9,13 +9,11 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +30,9 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         this.textView = findViewById(R.id.text_view_message)
+
+
+
         this.buttonDebug = findViewById(R.id.button_debug)
         this.buttonDebug.setOnClickListener {
             messageSTTBroadcastTransmitter.onReceive(applicationContext, Intent().also{ intent ->
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        this.categoriesView = findViewById(R.id.text_view_categories)
         this.buttonDebugCategories = findViewById(R.id.button_debug_read_categories)
         this.buttonDebugCategories.setOnClickListener {
             Intent("com.razeeman.util.simpletimetracker.ACTION_READ_CATEGORIES").also {
@@ -49,9 +49,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val newFilter = IntentFilter(Intent.ACTION_SEND)
+        this.buttonDebugCategories = findViewById(R.id.button_debug_read_running_records)
+        this.buttonDebugCategories.setOnClickListener {
+            Intent("com.razeeman.util.simpletimetracker.ACTION_READ_RUNNING_RECORDS").also {
+                it.setPackage("com.razeeman.util.simpletimetracker.debug")
+                Log.i(LOG_TAG, "Broadcasting Intent: $it")
+                applicationContext.sendBroadcast(it)
+            }
+        }
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, newFilter)
+        this.buttonDebugCategories = findViewById(R.id.button_debug_prefs)
+        this.buttonDebugCategories.setOnClickListener {
+            Intent("com.razeeman.util.simpletimetracker.ACTION_READ_PREFS").also {
+                it.setPackage("com.razeeman.util.simpletimetracker.debug")
+                Log.i(LOG_TAG, "Broadcasting Intent: $it")
+                applicationContext.sendBroadcast(it)
+            }
+        }
     }
 
     inner class STTBroadcastTransmitter() : BroadcastReceiver() {

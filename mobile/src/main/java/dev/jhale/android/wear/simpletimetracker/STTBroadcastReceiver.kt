@@ -21,6 +21,18 @@ class STTBroadcastReceiver : BroadcastReceiver() {
                 }
             }
 
+            "com.razeeman.util.simpletimetracker.ACTION_SEND_RUNNING_RECORDS" -> {
+                intent.getStringExtra("running_records")?.also {
+                    Log.i(LOG_TAG, it)
+                }
+            }
+
+            "com.razeeman.util.simpletimetracker.ACTION_SEND_PREFS" -> {
+                intent.getBooleanExtra("allow_multitasking", false)?.also {
+                    Log.i(LOG_TAG, it.toString())
+                }
+            }
+
             else -> {
             }
         }

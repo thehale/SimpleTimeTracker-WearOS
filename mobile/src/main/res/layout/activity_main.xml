@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <TextView
-       android:id="@+id/text_view_message"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="Hello World!"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintVertical_bias="0.226" />
+   xmlns:app="http://schemas.android.com/apk/res-auto"
+   xmlns:tools="http://schemas.android.com/tools"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   tools:context=".MainActivity">
 
     <Button
        android:id="@+id/button_debug"
@@ -24,33 +13,69 @@
        android:text="Test Tracker Broadcast"
        app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.497"
+       app:layout_constraintHorizontal_bias="0.095"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintTop_toBottomOf="@+id/text_view_message"
-       app:layout_constraintVertical_bias="0.123" />
-
-    <TextView
-       android:id="@+id/text_view_categories"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="Categories will go here"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.462"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintVertical_bias="0.605" />
+       app:layout_constraintVertical_bias="0.072" />
 
     <Button
        android:id="@+id/button_debug_read_categories"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="Test Read Categories"
+       android:layout_width="379dp"
+       android:layout_height="56dp"
+       android:layout_marginBottom="240dp"
+       android:text="Broadcast Read Categories Intent"
        app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.497"
+       app:layout_constraintHorizontal_bias="0.656"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintTop_toBottomOf="@+id/text_view_message"
-       app:layout_constraintVertical_bias="0.781" />
+       app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+       android:id="@+id/button_debug_read_running_records"
+       android:layout_width="373dp"
+       android:layout_height="59dp"
+       android:layout_marginBottom="152dp"
+       android:text="Broadcast Running Records Intent"
+       app:layout_constraintBottom_toBottomOf="parent"
+       tools:layout_editor_absoluteX="19dp" />
+
+    <Button
+       android:id="@+id/button_debug_prefs"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginBottom="35dp"
+       android:text="Broadcast Read Prefs Intent"
+       app:layout_constraintBottom_toBottomOf="parent"
+       tools:layout_editor_absoluteX="21dp" />
+
+    <TextView
+       android:id="@+id/text_view_message"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Hello World!"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintHorizontal_bias="0.062"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintVertical_bias="0.075" />
+
+    <TextView
+       android:id="@+id/textView2"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Simple Time Tracker Debug View"
+       tools:layout_editor_absoluteX="20dp"
+       tools:layout_editor_absoluteY="19dp" />
+
+    <TextView
+       android:id="@+id/textView5"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginBottom="320dp"
+       android:text="Send Broadcasts with these buttons."
+       app:layout_constraintBottom_toBottomOf="parent"
+       tools:layout_editor_absoluteX="21dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
