@@ -6,6 +6,7 @@
 package dev.jhale.android.wear.simpletimetracker
 
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
@@ -25,21 +26,20 @@ import javax.inject.Inject
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 
 @AndroidEntryPoint
-class MessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
+class MobileMessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
     @Inject
     lateinit var sttBroadcastTransmitter: STTBroadcastTransmitter
 
+    lateinit var sttBroadcastHandler: BroadcastReceiver
+
     // This the right way to implement collections of constants in Kotlin?
-        // hoist to common library module?
-        companion object KnownMessages {
-            const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity";
-            const val REQUEST_CATEGORIES = "request_categories"
-        const val REQUEST_RUNNING_RECORDS = "request_running_records"
-        const val REQUEST_PREFS = "request_prefs"
+    // hoist to common library module?
+    companion object {
+        const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity";
+        const val STOP_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "stop_time_tracking_activity";
+        const val REQUEST_CATEGORIES = "request_categories"
         const val RECEIVE_CATEGORIES = "receive_categories"
-        const val RECEIVE_RUNNING_RECORDS = "receive_running_records"
-        const val RECEIVE_PREFS = "receive_prefs"
-        }
+    }
 
     inner class FakeBinder : Binder()
 
@@ -54,6 +54,12 @@ class MessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
         Wearable.getMessageClient(this).addListener(this);
     }
 
+    override fun onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(sttBroadcastHandler)
+        super.onDestroy()
+    }
+
+    //might move out of here and into something triggerable by broadcast receiver
     fun returnCategoriesList(context: Context, categories: List<String>) {
         Thread(Runnable {
             sendMessage(
@@ -118,15 +124,16 @@ class MessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
                 processStartTimeTrackingActivityMessage(messageEvent)
             }
 
+            STOP_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME -> {
+                processStopTimeTrackingActivityMessage(messageEvent)
+            }
+
             REQUEST_CATEGORIES -> {
-
+                sttBroadcastTransmitter.transmitSTTBroadcast(
+                    this,
+                    Intent("com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_CATEGORIES_RESPONSE")
+                )
             }
-
-            REQUEST_RUNNING_RECORDS -> {
-
-            }
-
-            //stop
 
             else -> {
                 Log.d(LOG_TAG, "Propagating message with path ${messageEvent.path}")
@@ -137,10 +144,38 @@ class MessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
     private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
         val message = String(messageEvent.data)
         Log.d(LOG_TAG, "Message received: $message")
-        Intent().also {intent ->
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra("message", message)
-            sttBroadcastTransmitter.onReceive(applicationContext, intent)
+
+        val messageParts = message.split("|")
+        val activity = messageParts[0]
+        val tag = messageParts[1]
+        if (activity.isNotEmpty()) {
+            sttBroadcastTransmitter.transmitSTTBroadcast(this,
+                Intent().also { intent ->
+                    intent.action = "com.razeeman.util.simpletimetracker.ACTION_START_ACTIVITY"
+                    intent.putExtra("extra_activity_name", activity)
+                    if (tag.isNotEmpty()) {
+                        intent.putExtra("extra_record_tag", tag)
+                    }
+                })
+        }
+    }
+
+    private fun processStopTimeTrackingActivityMessage(messageEvent: MessageEvent) {
+        val message = String(messageEvent.data)
+        Log.d(LOG_TAG, "Message received: $message")
+
+        val messageParts = message.split("|")
+        val activity = messageParts[0]
+        val tag = messageParts[1]
+        if (activity.isNotEmpty()) {
+            sttBroadcastTransmitter.transmitSTTBroadcast(this,
+                Intent().also { intent ->
+                    intent.action = "com.razeeman.util.simpletimetracker.ACTION_STOP_ACTIVITY"
+                    intent.putExtra("extra_activity_name", activity)
+                    if (tag.isNotEmpty()) {
+                        intent.putExtra("extra_record_tag", tag)
+                    }
+                })
         }
     }
 }

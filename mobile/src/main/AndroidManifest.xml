@@ -13,7 +13,7 @@
         android:theme="@style/Theme.SimpleTimeTrackerForWearOS"
         tools:targetApi="31">
         <service
-            android:name=".MessagingFacade"
+            android:name=".MobileMessagingFacade"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -41,9 +41,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_CATEGORIES" />
-                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_RUNNING_RECORDS" />
-                <action android:name="com.razeeman.util.simpletimetracker.ACTION_SEND_PREFS" />
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_CATEGORIES_RESPONSE" />
+                <action android:name="com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_PREFS_RESPONSE" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

@@ -7,75 +7,49 @@
    tools:context=".MainActivity">
 
     <Button
-       android:id="@+id/button_debug"
+       android:id="@+id/button_debug_read_categories"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:text="Test Tracker Broadcast"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.095"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toBottomOf="@+id/text_view_message"
-       app:layout_constraintVertical_bias="0.072" />
-
-    <Button
-       android:id="@+id/button_debug_read_categories"
-       android:layout_width="379dp"
-       android:layout_height="56dp"
        android:layout_marginBottom="240dp"
+       android:layout_marginTop="411dp"
        android:text="Broadcast Read Categories Intent"
        app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.656"
+       app:layout_constraintHorizontal_bias="0.494"
        app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toBottomOf="@+id/text_view_message"
-       app:layout_constraintVertical_bias="1.0" />
-
-    <Button
-       android:id="@+id/button_debug_read_running_records"
-       android:layout_width="373dp"
-       android:layout_height="59dp"
-       android:layout_marginBottom="152dp"
-       android:text="Broadcast Running Records Intent"
-       app:layout_constraintBottom_toBottomOf="parent"
-       tools:layout_editor_absoluteX="19dp" />
+       app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintVertical_bias="0.0" />
 
     <Button
        android:id="@+id/button_debug_prefs"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:layout_marginBottom="35dp"
+       android:layout_marginBottom="216dp"
        android:text="Broadcast Read Prefs Intent"
        app:layout_constraintBottom_toBottomOf="parent"
-       tools:layout_editor_absoluteX="21dp" />
-
-    <TextView
-       android:id="@+id/text_view_message"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="Hello World!"
-       app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.062"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintVertical_bias="0.075" />
+       app:layout_constraintHorizontal_bias="0.5"
+       app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
        android:id="@+id/textView2"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
+       android:layout_marginStart="20dp"
+       android:layout_marginTop="19dp"
        android:text="Simple Time Tracker Debug View"
-       tools:layout_editor_absoluteX="20dp"
-       tools:layout_editor_absoluteY="19dp" />
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
        android:id="@+id/textView5"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:layout_marginBottom="320dp"
+       android:layout_marginStart="21dp"
+       android:layout_marginTop="392dp"
        android:text="Send Broadcasts with these buttons."
-       app:layout_constraintBottom_toBottomOf="parent"
-       tools:layout_editor_absoluteX="21dp" />
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

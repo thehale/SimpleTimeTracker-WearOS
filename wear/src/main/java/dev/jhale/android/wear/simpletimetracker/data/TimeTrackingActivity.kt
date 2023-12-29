@@ -10,63 +10,15 @@ import dev.jhale.android.wear.simpletimetracker.R
 
 class TimeTrackingActivity(
     val name: String,
-    val tags: List<String>,
-    val color: Color,
-    val iconId: Int,
+    val tags: List<String> = listOf(),
+    val color: Color = Color(96, 125, 139, 255),
+    val iconId: Int = R.drawable.baseline_question_mark_24,
+    val timeStarted: Long = -1,
 )
 
 fun getTimeTrackingActivities(): List<TimeTrackingActivity> {
     return listOf<TimeTrackingActivity> (
-        activity("TODOs"),
-        activity("Travel"),
-        activity("Planning"),
-        activity("Personal Learning", listOf<String>("Classes", "Thesis", "Homework", "Hobbies", "Music")),
-        activity("Professional Development", listOf<String>("Anva", "Networking", "Trainings", "Volunteer")),
-        activity("Basic Needs", listOf<String>("Exercise", "Hygiene", "Meals", "Sleep")),
-        activity("Church", listOf<String>("Service", "Study", "Worship")),
-        activity("Activities", listOf<String>("Family", "Friends", "Personal")),
-        activity("Dates"),
-        activity("Other"),
+        TimeTrackingActivity("Work", color = Color(255, 87, 34, 255), iconId = R.drawable.baseline_computer_24),
+        TimeTrackingActivity("Micro Goal", color = Color(205, 220, 57, 255), iconId = R.drawable.baseline_computer_24),
     )
-}
-
-fun activity(name: String, tags: List<String> = listOf()): TimeTrackingActivity {
-    return TimeTrackingActivity(
-        name = name,
-        tags = tags,
-        color = colorForActivity(name),
-        iconId = iconForActivity(name),
-    )
-}
-
-fun iconForActivity(activityName: String): Int {
-    val icons = mapOf<String, Int>(
-        "Activities" to R.drawable.baseline_people_24,
-        "Basic Needs" to R.drawable.baseline_bed_24,
-        "Church" to R.drawable.baseline_church_24,
-        "Dates" to R.drawable.baseline_heart_broken_24,
-        "Other" to R.drawable.baseline_horizontal_rule_24,
-        "Personal Learning" to R.drawable.baseline_computer_24,
-        "Planning" to R.drawable.baseline_timer_24,
-        "Professional Development" to R.drawable.baseline_home_work_24,
-        "TODOs" to R.drawable.baseline_check_box_24,
-        "Travel" to R.drawable.baseline_directions_car_24,
-    )
-    return icons.getOrDefault(activityName, R.drawable.baseline_question_mark_24)
-}
-
-fun colorForActivity(activityName: String): Color {
-    val colors = mapOf<String, Color>(
-        "Activities" to Color(3, 169, 244, 255),
-        "Basic Needs" to Color(205, 220, 57, 255),
-        "Church" to Color(76, 175, 80, 255),
-        "Dates" to Color(156, 39, 176, 255),
-        "Other" to Color(96, 125, 139, 255),
-        "Personal Learning" to Color(255, 193, 7, 255),
-        "Planning" to Color(255, 87, 34, 255),
-        "Professional Development" to Color(233, 30, 99, 255),
-        "TODOs" to Color(245, 54, 57, 255),
-        "Travel" to Color(120, 82, 72, 255),
-    )
-    return colors.getOrDefault(activityName, Color(96, 125, 139, 255))
 }

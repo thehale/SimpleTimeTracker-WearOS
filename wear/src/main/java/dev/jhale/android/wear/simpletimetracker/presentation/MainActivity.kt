@@ -10,24 +10,54 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.*
+import androidx.wear.compose.material.ChipDefaults
+import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
+import androidx.wear.compose.material.ScalingLazyColumn
+import androidx.wear.compose.material.ScalingLazyListState
+import androidx.wear.compose.material.Switch
+import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.material.ToggleChip
+import androidx.wear.compose.material.ToggleChipDefaults
+import androidx.wear.compose.material.Vignette
+import androidx.wear.compose.material.VignettePosition
+import androidx.wear.compose.material.rememberScalingLazyListState
+import androidx.wear.compose.material.scrollAway
+import com.google.android.gms.wearable.Wearable
 import com.google.android.horologist.compose.focus.rememberActiveFocusRequester
 import com.google.android.horologist.compose.navscaffold.ExperimentalHorologistComposeLayoutApi
-import com.google.android.horologist.compose.rotaryinput.*
+import com.google.android.horologist.compose.rotaryinput.rememberRotaryHapticFeedback
+import com.google.android.horologist.compose.rotaryinput.rotaryWithScroll
 import dagger.hilt.android.AndroidEntryPoint
-import dev.jhale.android.wear.simpletimetracker.R
 import dev.jhale.android.wear.simpletimetracker.MessagingFacade
-import dev.jhale.android.wear.simpletimetracker.data.getTimeTrackingActivities
+import dev.jhale.android.wear.simpletimetracker.R
+import dev.jhale.android.wear.simpletimetracker.data.TimeTrackingActivity
 import dev.jhale.android.wear.simpletimetracker.presentation.theme.SimpleTimeTrackerForWearOSTheme
 import javax.inject.Inject
 
@@ -35,23 +65,47 @@ import javax.inject.Inject
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity @Inject constructor() : ComponentActivity() {
     @Inject
     lateinit var messagingFacade: MessagingFacade;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val dataInteraction = messagingFacade::startTimeTracking
+        Wearable.getMessageClient(this).addListener(messagingFacade)
+
+        messagingFacade.requestCategoriesList(applicationContext) { categories ->
+            this.renderActivitiesList(
+                categories
+            )
+        }
 
         setContent {
-            WearApp(dataInteraction)
+            WearApp(false, this::toggleChipDataInteraction)
+        }
+    }
+
+    fun renderActivitiesList(activityList: List<TimeTrackingActivity>) {
+        setContent {
+            WearApp(true, this::toggleChipDataInteraction, activityList)
+        }
+    }
+
+    private fun toggleChipDataInteraction(checked: Boolean, context: Context, activity: String, tag: String): Unit {
+        if (checked) {
+            messagingFacade.startTimeTracking(context, activity, tag)
+        } else {
+            messagingFacade.stopTimeTracking(context, activity, tag)
         }
     }
 }
 
 @Composable
-fun WearApp(dataInteraction: (context: Context, activity: String, tag: String) -> Unit) {
+fun WearApp(
+    loadedActivities: Boolean,
+    dataInteraction: (checked: Boolean, context: Context, activity: String, tag: String) -> Unit,
+    activityList: List<TimeTrackingActivity> = listOf()
+) {
     SimpleTimeTrackerForWearOSTheme {
         val scrollState = rememberScalingLazyListState()
         Scaffold(
@@ -65,7 +119,7 @@ fun WearApp(dataInteraction: (context: Context, activity: String, tag: String) -
                 PositionIndicator(scalingLazyListState = scrollState)
             }
         ) {
-            ActivityList(scrollState, dataInteraction)
+            if (loadedActivities) ActivityList(activityList, scrollState, dataInteraction) else CircularProgressIndicator()
         }
     }
 }
@@ -73,10 +127,10 @@ fun WearApp(dataInteraction: (context: Context, activity: String, tag: String) -
 @OptIn(ExperimentalHorologistComposeLayoutApi::class)
 @Composable
 fun ActivityList(
+    activities: List<TimeTrackingActivity>,
     scrollState: ScalingLazyListState = rememberScalingLazyListState(),
-    dataInteraction: (context: Context, activity: String, tag: String) -> Unit
+    dataInteraction: (checked: Boolean, context: Context, activity: String, tag: String) -> Unit
 ) {
-    val activities = getTimeTrackingActivities()
     val focusRequester = rememberActiveFocusRequester()
     val rotaryHapticFeedback = rememberRotaryHapticFeedback()
     ScalingLazyColumn(
@@ -97,6 +151,7 @@ fun ActivityList(
                         tag = "",
                         color = activity.color,
                         icon = activity.iconId,
+                        timeStarted = activity.timeStarted,
                         dataInteraction
                     )
                 }
@@ -108,6 +163,7 @@ fun ActivityList(
                             tag = tag,
                             color = activity.color,
                             icon = activity.iconId,
+                            timeStarted = activity.timeStarted,
                             dataInteraction
                         )
                     }
@@ -123,12 +179,14 @@ fun Activity(
     tag: String,
     color: Color = Color(96, 125, 139, 255),
     icon: Int = R.drawable.baseline_question_mark_24,
-    dataInteraction: (context: Context, activity: String, tag: String) -> Unit
+    timeStarted: Long,
+    dataInteraction: (checked: Boolean, context: Context, activity: String, tag: String) -> Unit
 ) {
     if (tag.isNotEmpty()) {
-        ActivityWithTag(name = name, tag = tag, color = color, icon = icon, dataInteraction)
+        ActivityWithTag(name = name, tag = tag, color = color, icon = icon, timeStarted = timeStarted,
+                dataInteraction)
     } else {
-        ActivityWithoutTag(name = name, color = color, icon = icon, dataInteraction)
+        ActivityWithoutTag(name = name, color = color, icon = icon, timeStarted = timeStarted, dataInteraction)
     }
 }
 
@@ -138,14 +196,16 @@ fun ActivityWithTag(
     tag: String,
     color: Color = Color(96, 125, 139, 255),
     icon: Int = R.drawable.baseline_question_mark_24,
-    dataInteraction: (context: Context, activity: String, tag: String) -> Unit
+    timeStarted: Long,
+    dataInteraction: (checked: Boolean, context: Context, activity: String, tag: String) -> Unit
 ) {
+    var switchChecked by remember { mutableStateOf(timeStarted > -1) }
     val context = LocalContext.current
-    Chip(
+    ToggleChip(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .padding(top = 10.dp),
-        icon = {
+        appIcon = {
             ActivityIcon(iconId = icon)
         },
         label = {
@@ -162,10 +222,23 @@ fun ActivityWithTag(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        colors = ChipDefaults.chipColors(
-            backgroundColor = color
+        colors = ToggleChipDefaults.toggleChipColors(
+            checkedStartBackgroundColor = color,
+            checkedEndBackgroundColor = color,
+            uncheckedToggleControlColor = ToggleChipDefaults.SwitchUncheckedIconColor
         ),
-        onClick = { dataInteraction(context, name, tag) }
+        onCheckedChange = { switchChecked = it; dataInteraction(switchChecked, context, name, "") },
+        checked = switchChecked,
+        toggleControl = {
+            Switch(
+                checked = switchChecked,
+                enabled = true,
+                modifier = Modifier.semantics {
+                    this.contentDescription =
+                        if (switchChecked) "On" else "Off"
+                }
+            )
+        }
     )
 }
 
@@ -175,14 +248,16 @@ fun ActivityWithoutTag(
     name: String,
     color: Color = Color(96, 125, 139, 255),
     icon: Int = R.drawable.baseline_question_mark_24,
-    dataInteraction: (context: Context, activity: String, tag: String) -> Unit
+    timeStarted: Long,
+    dataInteraction: (checked: Boolean, context: Context, activity: String, tag: String) -> Unit
 ) {
+    var switchChecked by remember { mutableStateOf(timeStarted > -1) }
     val context = LocalContext.current
-    Chip(
+    ToggleChip(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .padding(top = 10.dp),
-        icon = {
+        appIcon = {
             ActivityIcon(iconId = icon)
         },
         label = {
@@ -192,10 +267,23 @@ fun ActivityWithoutTag(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        colors = ChipDefaults.chipColors(
-            backgroundColor = color
+        colors = ToggleChipDefaults.toggleChipColors(
+            checkedStartBackgroundColor = color,
+            checkedEndBackgroundColor = color,
+            uncheckedToggleControlColor = ToggleChipDefaults.SwitchUncheckedIconColor
         ),
-        onClick = { dataInteraction(context, name, "") }
+        onCheckedChange = { switchChecked = it; dataInteraction(switchChecked, context, name, "") },
+        checked = switchChecked,
+        toggleControl = {
+            Switch(
+                checked = switchChecked,
+                enabled = true,
+                modifier = Modifier.semantics {
+                    this.contentDescription =
+                        if (switchChecked) "On" else "Off"
+                }
+            )
+        }
     )
 }
 

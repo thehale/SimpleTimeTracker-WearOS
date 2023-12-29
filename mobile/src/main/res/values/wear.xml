@@ -2,8 +2,8 @@
     tools:keep="@array/android_wear_capabilities">
     <string-array name="android_wear_capabilities">
         <item>start_time_tracking_activity</item>
+        <item>stop_time_tracking_activity</item>
         <item>request_categories</item>
-        <item>request_running_records</item>
         <item>request_prefs</item>
     </string-array>
 </resources>
