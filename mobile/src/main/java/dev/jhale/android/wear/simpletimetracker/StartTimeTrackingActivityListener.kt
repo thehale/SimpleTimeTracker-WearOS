@@ -5,28 +5,44 @@
  */
 package dev.jhale.android.wear.simpletimetracker
 
+import android.app.Service
 import android.content.Intent
+import android.os.Binder
+import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
-import com.google.android.gms.wearable.WearableListenerService
+import com.google.android.gms.wearable.Wearable
 
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 const val START_TIME_TRACKING_ACTIVITY_PATH = "/start_time_tracking_activity"
 
-class StartTimeTrackingActivityListener : WearableListenerService() {
+class StartTimeTrackingActivityListener : Service(), MessageClient.OnMessageReceivedListener {
+    override fun onCreate() {
+        super.onCreate()
+        Log.i(LOG_TAG, "Creating StartTimeTrackingActivityListener")
+        Wearable.getMessageClient(this).addListener(this)
+    }
+
+    private val binder = Binder()
+
+    override fun onBind(_unused: Intent?): IBinder? {
+        return binder
+    }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
-        if (messageEvent.path.equals(START_TIME_TRACKING_ACTIVITY_PATH)) {
+        val path = messageEvent.path
+        Log.i(LOG_TAG, "onMessageReceived $path")
+        if (path.equals(START_TIME_TRACKING_ACTIVITY_PATH)) {
             processStartTimeTrackingActivityMessage(messageEvent)
         } else {
-            Log.d(LOG_TAG, "Propagating message with path ${messageEvent.path}")
-            super.onMessageReceived(messageEvent)
+            Log.e(LOG_TAG, "Unable to process message with path ${messageEvent.path}")
         }
     }
     private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
         val message = String(messageEvent.data)
-        Log.d(LOG_TAG, "Message received: $message")
+        Log.i(LOG_TAG, "Message received: $message")
         Intent().also {intent ->
             intent.action = Intent.ACTION_SEND
             intent.putExtra("message", message)

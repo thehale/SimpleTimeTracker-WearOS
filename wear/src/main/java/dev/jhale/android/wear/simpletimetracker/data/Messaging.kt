@@ -39,6 +39,7 @@ class Messaging {
         // Send the message
         val message = "$activity|$tag"
         bestNode?.also { nodeId ->
+            Log.i(LOG_TAG, "Sending message to $bestNode")
             val sendTask: Task<*> = Wearable.getMessageClient(context).sendMessage(
                 nodeId,
                 "/$START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME",
