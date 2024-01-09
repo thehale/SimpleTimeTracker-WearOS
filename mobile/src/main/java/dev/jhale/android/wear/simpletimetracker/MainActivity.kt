@@ -61,6 +61,8 @@ class MainActivity : AppCompatActivity() {
                     Log.i(LOG_TAG, "Broadcasting Intent: $intent")
                     context?.sendBroadcast(intent)
                 }
+            } else {
+                Log.e(LOG_TAG, "Activity name is empty!")
             }
         }
     }
