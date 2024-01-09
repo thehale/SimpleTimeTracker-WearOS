@@ -18,10 +18,10 @@ import com.google.android.gms.wearable.Wearable
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 const val START_TIME_TRACKING_ACTIVITY_PATH = "/start_time_tracking_activity"
 
-class StartTimeTrackingActivityListener : Service(), MessageClient.OnMessageReceivedListener {
+class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListener {
     override fun onCreate() {
         super.onCreate()
-        Log.i(LOG_TAG, "Creating StartTimeTrackingActivityListener")
+        Log.i(LOG_TAG, "Creating MessageReceiverService")
         Wearable.getMessageClient(this).addListener(this)
     }
 

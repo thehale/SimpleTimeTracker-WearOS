@@ -12,7 +12,7 @@
         android:theme="@style/Theme.SimpleTimeTrackerForWearOS"
         tools:targetApi="31">
         <service
-            android:name=".StartTimeTrackingActivityListener"
+            android:name=".MessageReceiverService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
