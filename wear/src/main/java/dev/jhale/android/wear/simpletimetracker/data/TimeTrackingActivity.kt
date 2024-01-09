@@ -17,13 +17,13 @@ class TimeTrackingActivity(
 
 fun getTimeTrackingActivities(): List<TimeTrackingActivity> {
     return listOf<TimeTrackingActivity> (
-        activity("TODOs"),
-        activity("Travel"),
-        activity("Planning"),
-        activity("Personal Learning", listOf<String>("Classes", "Thesis", "Homework", "Hobbies", "Music")),
-        activity("Professional Development", listOf<String>("Anva", "Networking", "Trainings", "Volunteer")),
+        activity("TODOs", listOf<String>("Chores", "Shopping")),
+        activity("Travel", listOf<String>("Bike", "Car", "Plane", "Scooter", "Public Transit")),
+        activity("Planning", listOf<String>("Goals", "Processing", "Reflection")),
+        activity("Personal Learning", listOf<String>("Industry", "Hobbies", "Music")),
+        activity("Professional Development", listOf<String>("Engineering", "Networking", "Trainings")),
         activity("Basic Needs", listOf<String>("Exercise", "Hygiene", "Meals", "Sleep")),
-        activity("Church", listOf<String>("Service", "Study", "Worship")),
+        activity("Church", listOf<String>("Service", "Study", "Worship", "Volunteer")),
         activity("Activities", listOf<String>("Family", "Friends", "Personal")),
         activity("Dates"),
         activity("Other"),
