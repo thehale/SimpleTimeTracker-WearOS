@@ -18,6 +18,12 @@ import com.google.android.gms.wearable.Wearable
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 const val START_TIME_TRACKING_ACTIVITY_PATH = "/start_time_tracking_activity"
 
+/**
+ * Landing point for messages coming to Mobile from Wear.
+ *
+ * Implemented as a Service so that it can receive messages even when the Mobile app is stopped or
+ * in the background.
+ */
 class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListener {
     override fun onCreate() {
         super.onCreate()
@@ -31,6 +37,9 @@ class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListene
         return binder
     }
 
+    /**
+     * Delegates received messages to their respective handlers
+     */
     override fun onMessageReceived(messageEvent: MessageEvent) {
         val path = messageEvent.path
         Log.i(LOG_TAG, "onMessageReceived $path")
@@ -40,6 +49,10 @@ class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListene
             else -> Log.e(LOG_TAG, "Unable to process message with path $path")
         }
     }
+
+    /**
+     * Handles messages requesting the start of a new time tracking activity
+     */
     private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
         val message = String(messageEvent.data)
         Log.i(LOG_TAG, "Message received: $message")
