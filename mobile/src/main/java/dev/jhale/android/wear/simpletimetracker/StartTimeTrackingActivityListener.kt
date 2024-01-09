@@ -34,10 +34,10 @@ class StartTimeTrackingActivityListener : Service(), MessageClient.OnMessageRece
     override fun onMessageReceived(messageEvent: MessageEvent) {
         val path = messageEvent.path
         Log.i(LOG_TAG, "onMessageReceived $path")
-        if (path.equals(START_TIME_TRACKING_ACTIVITY_PATH)) {
-            processStartTimeTrackingActivityMessage(messageEvent)
-        } else {
-            Log.e(LOG_TAG, "Unable to process message with path ${messageEvent.path}")
+        when (path) {
+            START_TIME_TRACKING_ACTIVITY_PATH -> processStartTimeTrackingActivityMessage(messageEvent)
+            // OTHER_PATH -> processOtherMessage(messageEvent)
+            else -> Log.e(LOG_TAG, "Unable to process message with path $path")
         }
     }
     private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
