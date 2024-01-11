@@ -6,23 +6,18 @@
 package dev.jhale.android.wear.simpletimetracker
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.android.gms.wearable.CapabilityClient
-import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Wearable
 
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 
-class MobileMessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
-    val sttBroadcastTransmitter: STTBroadcastTransmitter = STTBroadcastTransmitter()
+class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListener {
+    private val sttBroadcastTransmitter: STTBroadcastTransmitter = STTBroadcastTransmitter()
 
     // This the right way to implement collections of constants in Kotlin?
     // hoist to common library module?
@@ -44,67 +39,6 @@ class MobileMessagingFacade : Service(), MessageClient.OnMessageReceivedListener
     override fun onCreate() {
         super.onCreate()
         Wearable.getMessageClient(this).addListener(this);
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    //might move out of here and into something triggerable by broadcast receiver
-    fun returnCategoriesList(context: Context, categories: List<String>) {
-        Thread(Runnable {
-            sendMessage(
-                context,
-                RECEIVE_CATEGORIES,
-                categories.joinToString()
-            )
-        }).start()
-    }
-
-    private fun sendMessage(
-        context: Context,
-        capability: String,
-        message: String
-    ) {
-        // Find all nodes which support the time tracking message
-        val capabilityInfo: CapabilityInfo = Tasks.await(
-            Wearable.getCapabilityClient(context)
-                .getCapability(
-                    capability,
-                    CapabilityClient.FILTER_REACHABLE
-                )
-        )
-
-        // Choose the best node (the closest one connected to the watch
-        val nodes = capabilityInfo.nodes
-        val bestNode = nodes.firstOrNull { it.isNearby }?.id ?: nodes.firstOrNull()?.id
-
-        // Send the message
-        bestNode?.also { nodeId ->
-            val sendTask: Task<*> = Wearable.getMessageClient(context).sendMessage(
-                nodeId,
-                "/$capability",
-                message.toByteArray()
-            ).apply {
-                addOnSuccessListener {
-                    Log.i(
-                        LOG_TAG,
-                        "Sent $capability message: $message"
-                    )
-                }
-                addOnFailureListener {
-                    Log.e(
-                        LOG_TAG,
-                        "Failed to send $capability message: $message"
-                    )
-                }
-            }
-        } ?: run {
-            Log.e(
-                LOG_TAG,
-                "No nodes found with the capability $capability"
-            )
-        }
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
