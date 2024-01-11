@@ -54,20 +54,16 @@ import com.google.android.horologist.compose.focus.rememberActiveFocusRequester
 import com.google.android.horologist.compose.navscaffold.ExperimentalHorologistComposeLayoutApi
 import com.google.android.horologist.compose.rotaryinput.rememberRotaryHapticFeedback
 import com.google.android.horologist.compose.rotaryinput.rotaryWithScroll
-import dagger.hilt.android.AndroidEntryPoint
 import dev.jhale.android.wear.simpletimetracker.MessagingFacade
 import dev.jhale.android.wear.simpletimetracker.R
 import dev.jhale.android.wear.simpletimetracker.data.TimeTrackingActivity
 import dev.jhale.android.wear.simpletimetracker.presentation.theme.SimpleTimeTrackerForWearOSTheme
-import javax.inject.Inject
 
 
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 
-@AndroidEntryPoint
-class MainActivity @Inject constructor() : ComponentActivity() {
-    @Inject
-    lateinit var messagingFacade: MessagingFacade;
+class MainActivity : ComponentActivity() {
+    val messagingFacade: MessagingFacade = MessagingFacade()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

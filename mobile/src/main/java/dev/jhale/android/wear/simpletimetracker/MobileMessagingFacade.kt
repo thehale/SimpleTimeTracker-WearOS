@@ -6,13 +6,11 @@
 package dev.jhale.android.wear.simpletimetracker
 
 import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wearable.CapabilityClient
@@ -20,17 +18,11 @@ import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Wearable
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
 
-@AndroidEntryPoint
 class MobileMessagingFacade : Service(), MessageClient.OnMessageReceivedListener {
-    @Inject
-    lateinit var sttBroadcastTransmitter: STTBroadcastTransmitter
-
-    lateinit var sttBroadcastHandler: BroadcastReceiver
+    val sttBroadcastTransmitter: STTBroadcastTransmitter = STTBroadcastTransmitter()
 
     // This the right way to implement collections of constants in Kotlin?
     // hoist to common library module?
@@ -55,7 +47,6 @@ class MobileMessagingFacade : Service(), MessageClient.OnMessageReceivedListener
     }
 
     override fun onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(sttBroadcastHandler)
         super.onDestroy()
     }
 

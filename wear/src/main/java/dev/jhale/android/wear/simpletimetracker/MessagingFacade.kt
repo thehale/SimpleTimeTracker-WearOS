@@ -19,9 +19,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dev.jhale.android.wear.simpletimetracker.data.TimeTrackingActivity
 import dev.jhale.android.wear.simpletimetracker.presentation.LOG_TAG
-import javax.inject.Inject
 
-class MessagingFacade @Inject constructor() : MessageClient.OnMessageReceivedListener {
+class MessagingFacade : MessageClient.OnMessageReceivedListener {
 
     // This the right way to implement collections of constants in Kotlin?
     companion object KnownMessages {

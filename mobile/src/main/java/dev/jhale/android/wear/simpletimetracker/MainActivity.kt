@@ -10,16 +10,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     lateinit var buttonDebugCategories: Button
     lateinit var buttonDebugPrefs: Button
 
-    @Inject
-    lateinit var sttBroadcastTransmitter: STTBroadcastTransmitter
+    val sttBroadcastTransmitter: STTBroadcastTransmitter = STTBroadcastTransmitter()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
