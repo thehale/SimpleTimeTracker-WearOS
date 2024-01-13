@@ -56,7 +56,7 @@ class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListene
             REQUEST_CATEGORIES -> {
                 sttBroadcastTransmitter.transmitSTTBroadcast(
                     this,
-                    Intent("com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_CATEGORIES_RESPONSE")
+                    Intent("com.razeeman.util.simpletimetracker.ACTION_ADHOC_EXPORT_CATEGORIES")
                 )
             }
 
