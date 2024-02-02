@@ -56,7 +56,7 @@ class MessageReceiverService : Service(), MessageClient.OnMessageReceivedListene
     private fun processStartTimeTrackingActivityMessage(messageEvent: MessageEvent) {
         val message = String(messageEvent.data)
         Log.i(LOG_TAG, "Message received: $message")
-        Intent().also {intent ->
+        Intent().also { intent ->
             intent.action = Intent.ACTION_SEND
             intent.putExtra("message", message)
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)

@@ -17,20 +17,32 @@ import dev.jhale.android.wear.simpletimetracker.presentation.LOG_TAG
 const val START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME = "start_time_tracking_activity"
 
 class Messaging {
-    fun startTimeTracking(context: Context, activity: String, tag: String) {
-        Thread(Runnable {
-            startTimeTrackingTask(context, activity, tag)
-        }).start()
+    fun startTimeTracking(
+        context: Context,
+        activity: String,
+        tag: String,
+    ) {
+        Thread(
+            Runnable {
+                startTimeTrackingTask(context, activity, tag)
+            },
+        ).start()
     }
-    private fun startTimeTrackingTask(context: Context, activity: String, tag: String) {
+
+    private fun startTimeTrackingTask(
+        context: Context,
+        activity: String,
+        tag: String,
+    ) {
         // Find all nodes which support the time tracking message
-        val capabilityInfo: CapabilityInfo = Tasks.await(
-            Wearable.getCapabilityClient(context)
-                .getCapability(
-                    START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME,
-                    CapabilityClient.FILTER_REACHABLE
-                )
-        )
+        val capabilityInfo: CapabilityInfo =
+            Tasks.await(
+                Wearable.getCapabilityClient(context)
+                    .getCapability(
+                        START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME,
+                        CapabilityClient.FILTER_REACHABLE,
+                    ),
+            )
 
         // Choose the best node (the closest one connected to the watch
         val nodes = capabilityInfo.nodes
@@ -40,28 +52,29 @@ class Messaging {
         val message = "$activity|$tag"
         bestNode?.also { nodeId ->
             Log.i(LOG_TAG, "Sending message to $bestNode")
-            val sendTask: Task<*> = Wearable.getMessageClient(context).sendMessage(
-                nodeId,
-                "/$START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME",
-                message.toByteArray()
-            ).apply {
-                addOnSuccessListener {
-                    Log.i(
-                        LOG_TAG,
-                        "Sent $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME message: $message"
-                    )
+            val sendTask: Task<*> =
+                Wearable.getMessageClient(context).sendMessage(
+                    nodeId,
+                    "/$START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME",
+                    message.toByteArray(),
+                ).apply {
+                    addOnSuccessListener {
+                        Log.i(
+                            LOG_TAG,
+                            "Sent $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME message: $message",
+                        )
+                    }
+                    addOnFailureListener {
+                        Log.e(
+                            LOG_TAG,
+                            "Failed to send $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME message: $message",
+                        )
+                    }
                 }
-                addOnFailureListener {
-                    Log.e(
-                        LOG_TAG,
-                        "Failed to send $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME message: $message"
-                    )
-                }
-            }
         } ?: run {
             Log.e(
                 LOG_TAG,
-                "No nodes found with the capability $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME"
+                "No nodes found with the capability $START_TIME_TRACKING_ACTIVITY_CAPABILITY_NAME",
             )
         }
     }

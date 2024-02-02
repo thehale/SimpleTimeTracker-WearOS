@@ -17,7 +17,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
-
 class MainActivity : AppCompatActivity() {
     lateinit var textView: TextView
     lateinit var buttonDebug: Button
@@ -31,9 +30,12 @@ class MainActivity : AppCompatActivity() {
         this.textView = findViewById(R.id.text_view_message)
         this.buttonDebug = findViewById(R.id.button_debug)
         this.buttonDebug.setOnClickListener {
-            messageReceiver.onReceive(applicationContext, Intent().also{intent ->
-                intent.putExtra("message", "Personal Learning|Hobbies")
-            })
+            messageReceiver.onReceive(
+                applicationContext,
+                Intent().also { intent ->
+                    intent.putExtra("message", "Personal Learning|Hobbies")
+                },
+            )
         }
 
         val newFilter = IntentFilter(Intent.ACTION_SEND)
@@ -42,8 +44,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class Receiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context?, intent: Intent?) {
+        override fun onReceive(
+            context: Context?,
+            intent: Intent?,
+        ) {
             val message = intent?.extras?.getString("message") ?: "|"
             textView.text = message
 

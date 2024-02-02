@@ -29,9 +29,7 @@ import dev.jhale.android.wear.simpletimetracker.data.Messaging
 import dev.jhale.android.wear.simpletimetracker.data.getTimeTrackingActivities
 import dev.jhale.android.wear.simpletimetracker.presentation.theme.SimpleTimeTrackerForWearOSTheme
 
-
 const val LOG_TAG = "dev.jhale.android.wear.simpletimetracker"
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +53,7 @@ fun WearApp() {
             },
             positionIndicator = {
                 PositionIndicator(scalingLazyListState = scrollState)
-            }
+            },
         ) {
             ActivityList(scrollState)
         }
@@ -69,11 +67,12 @@ fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListStat
     val focusRequester = rememberActiveFocusRequester()
     val rotaryHapticFeedback = rememberRotaryHapticFeedback()
     ScalingLazyColumn(
-        modifier = Modifier
-            .rotaryWithScroll(focusRequester, scrollState, rotaryHapticFeedback)
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-            .selectableGroup(),
+        modifier =
+            Modifier
+                .rotaryWithScroll(focusRequester, scrollState, rotaryHapticFeedback)
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+                .selectableGroup(),
         contentPadding = PaddingValues(10.dp),
         verticalArrangement = Arrangement.Center,
         state = scrollState,
@@ -85,7 +84,7 @@ fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListStat
                         name = activity.name,
                         tag = "",
                         color = activity.color,
-                        icon = activity.iconId
+                        icon = activity.iconId,
                     )
                 }
             } else {
@@ -95,7 +94,7 @@ fun ActivityList(scrollState: ScalingLazyListState = rememberScalingLazyListStat
                             name = activity.name,
                             tag = tag,
                             color = activity.color,
-                            icon = activity.iconId
+                            icon = activity.iconId,
                         )
                     }
                 }
@@ -109,7 +108,7 @@ fun Activity(
     name: String,
     tag: String,
     color: Color = Color(96, 125, 139, 255),
-    icon: Int = R.drawable.baseline_question_mark_24
+    icon: Int = R.drawable.baseline_question_mark_24,
 ) {
     if (tag.isNotEmpty()) {
         ActivityWithTag(name = name, tag = tag, color = color, icon = icon)
@@ -123,13 +122,14 @@ fun ActivityWithTag(
     name: String,
     tag: String,
     color: Color = Color(96, 125, 139, 255),
-    icon: Int = R.drawable.baseline_question_mark_24
+    icon: Int = R.drawable.baseline_question_mark_24,
 ) {
     val context = LocalContext.current
     Chip(
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(top = 10.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth(0.9f)
+                .padding(top = 10.dp),
         icon = {
             ActivityIcon(iconId = icon)
         },
@@ -137,35 +137,36 @@ fun ActivityWithTag(
             Text(
                 text = tag,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         },
         secondaryLabel = {
             Text(
                 text = name,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         },
-        colors = ChipDefaults.chipColors(
-            backgroundColor = color
-        ),
-        onClick = { startTimeTracking(context, name, tag) }
+        colors =
+            ChipDefaults.chipColors(
+                backgroundColor = color,
+            ),
+        onClick = { startTimeTracking(context, name, tag) },
     )
 }
-
 
 @Composable
 fun ActivityWithoutTag(
     name: String,
     color: Color = Color(96, 125, 139, 255),
-    icon: Int = R.drawable.baseline_question_mark_24
+    icon: Int = R.drawable.baseline_question_mark_24,
 ) {
     val context = LocalContext.current
     Chip(
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(top = 10.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth(0.9f)
+                .padding(top = 10.dp),
         icon = {
             ActivityIcon(iconId = icon)
         },
@@ -173,13 +174,14 @@ fun ActivityWithoutTag(
             Text(
                 text = name,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         },
-        colors = ChipDefaults.chipColors(
-            backgroundColor = color
-        ),
-        onClick = { startTimeTracking(context, name, "") }
+        colors =
+            ChipDefaults.chipColors(
+                backgroundColor = color,
+            ),
+        onClick = { startTimeTracking(context, name, "") },
     )
 }
 
@@ -188,12 +190,17 @@ fun ActivityIcon(iconId: Int) {
     Icon(
         painter = painterResource(id = iconId),
         contentDescription = "activity icon",
-        modifier = Modifier
-            .size(ChipDefaults.IconSize)
-            .wrapContentSize(align = Alignment.Center),
+        modifier =
+            Modifier
+                .size(ChipDefaults.IconSize)
+                .wrapContentSize(align = Alignment.Center),
     )
 }
 
-fun startTimeTracking(context: Context, activity: String, tag: String) {
+fun startTimeTracking(
+    context: Context,
+    activity: String,
+    tag: String,
+) {
     Messaging().startTimeTracking(context, activity, tag)
 }
