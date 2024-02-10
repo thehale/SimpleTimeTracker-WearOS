@@ -14,3 +14,4 @@ file("features").walkTopDown().maxDepth(1).forEach { dir ->
     }
 }
 include(":wear")
+include(":wearrpc")
